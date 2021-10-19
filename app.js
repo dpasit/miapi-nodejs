@@ -18,6 +18,7 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 // locahost:3000/
+// root
 app.use('/', indexRouter);
 
 // localhost:3000/users

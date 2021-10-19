@@ -10,6 +10,7 @@ const pool = new Pool()
 
 // localhost:3000/users
 /* GET users listing. */
+
 router.get('/', function (req, res, next) {
   //Query es una función que recibe 2 parametros
   //   query(        String        ,    Callback    )
@@ -32,12 +33,26 @@ router.get('/:id', async (req, res, next) => {
   res.json(user.rows[0]) // arreglo con objetos user [ {user}, ... ]
 });
 
+
 router.post("/", async (req, res, next) => {
   const { name, birthdate, rut, dv, address } = req.body;
   const client = new Client();
   client.connect();
   const result = await client.query(`
     INSERT INTO users (name, birthdate, rut, dv, address)
+    VALUES ($1, $2, $3, $4, $5) RETURNING id;`, [name, birthdate, rut, dv, address])
+  client.end();
+
+  const user = { id: result.rows[0].id, name, birthdate, rut, dv, address}
+  res.json(user);
+})
+
+router.put("/:id/edit", async (req, res, next) => {
+  const { name, birthdate, rut, dv, address } = req.body;
+  const client = new Client();
+  client.connect();
+  const result = await client.query(`
+    UPDATE users set (name, birthdate, rut, dv, address)
     VALUES ($1, $2, $3, $4, $5) RETURNING id;`, [name, birthdate, rut, dv, address])
   client.end();
 
